@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - nats
+  nats:
+    image: nats
+    ports:
+      - "4222:4222"

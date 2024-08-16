@@ -6,11 +6,11 @@ import (
 )
 
 func main() {
-	// NATS bağlantısını başlat
+	// Get NATS connection
 	nc := nats.ConnectToNATS()
 	defer nc.Close()
 
-	// ListenerService'i başlat ve "order.created" konusunu dinle
+	// Start ListenerService and listen "order.created"
 	subject := "order.created"
 	listenerService := listener.NewListenerService(nc, subject)
 	listenerService.Listen()

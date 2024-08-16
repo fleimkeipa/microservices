@@ -19,14 +19,14 @@ func CreateOrder(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
 	}
 
-	// NATS bağlantısını al
+	// Get NATS connection
 	nc := nats.ConnectToNATS()
 	defer nc.Close()
 
-	// OrderService'i başlat
+	// Start OrderService
 	orderService := order.NewOrderService(nc)
 
-	// Siparişi oluştur
+	// Create order
 	err := orderService.CreateOrder(c.Request().Context(), req.OrderID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not create order"})

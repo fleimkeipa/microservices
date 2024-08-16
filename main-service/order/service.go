@@ -16,10 +16,10 @@ func NewOrderService(nc *nats.Conn) *OrderService {
 }
 
 func (s *OrderService) CreateOrder(ctx context.Context, orderID string) error {
-	// Sipariş oluşturma işlemi (veritabanına kaydetme vb.)
+	// Create order
 	log.Printf("Creating order with ID: %s", orderID)
 
-	// İşlem tamamlandığında NATS üzerinden bir mesaj gönder
+	// Send message when on NATS
 	err := s.nc.Publish("order.created", []byte(orderID))
 	if err != nil {
 		log.Printf("Failed to publish order.created: %v", err)

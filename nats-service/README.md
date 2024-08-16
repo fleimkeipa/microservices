@@ -51,13 +51,13 @@ go run cmd/main.go
 
 To build and run the service using Docker:
 
-1. Build the Docker image:
+- Build the Docker image:
 
 ```bash
 docker build -t nats-listener-service .
 ```
 
-2. Run the Docker container:
+- Run the Docker container:
 
 ```bash
 docker run --rm -e NATS_URL=nats://localhost:4222 nats-listener-service

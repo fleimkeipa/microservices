@@ -2,8 +2,6 @@ package commands
 
 import (
 	"order-service/repositories/interfaces"
-
-	"github.com/labstack/echo/v4"
 )
 
 type OrderCommandHandlers struct {
@@ -16,6 +14,6 @@ func NewOrderCommandHandlers(repo interfaces.OrderInterfaces) *OrderCommandHandl
 	}
 }
 
-func (o *OrderCommandHandlers) Create(c echo.Context) error {
-	return o.repo.Create(c)
+func (o *OrderCommandHandlers) Create(orderID string) error {
+	return o.repo.Create(orderID)
 }

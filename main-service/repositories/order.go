@@ -2,37 +2,26 @@ package repositories
 
 import (
 	"log"
-	"net/http"
 
-	"order-service/models"
-	"order-service/pkg/nats"
-
-	"github.com/labstack/echo/v4"
+	"order-service/repositories/interfaces"
 )
 
 type OrderRepository struct {
+	natsRepo interfaces.MessageInterfaces
 }
 
-func NewOrderRepository() *OrderRepository {
-	return &OrderRepository{}
-}
-
-func (o *OrderRepository) Create(c echo.Context) error {
-	var req = new(models.OrderRequest)
-	if err := c.Bind(req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
+func NewOrderRepository(natsRepo interfaces.MessageInterfaces) *OrderRepository {
+	return &OrderRepository{
+		natsRepo: natsRepo,
 	}
+}
 
-	// Get NATS connection
-	var nc = nats.ConnectToNATS()
-	defer nc.Close()
-
+func (o *OrderRepository) Create(orderID string) error {
 	// Create order
-	var err = nc.Publish("order.created", []byte(req.OrderID))
-	if err != nil {
+	if err := o.natsRepo.Send("order.created", orderID); err != nil {
 		log.Printf("Failed to publish order.created: %v", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not create order"})
+		return err
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"message": "order created successfully"})
+	return nil
 }

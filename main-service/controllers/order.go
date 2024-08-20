@@ -2,12 +2,12 @@ package controllers
 
 import "order-service/repositories/interfaces"
 
-type CarControllers struct {
+type OrderControllers struct {
 	repo interfaces.OrderInterfaces
 }
 
-func NewCarControllers(repo interfaces.OrderInterfaces) *CarControllers {
-	return &CarControllers{
+func NewOrderControllers(repo interfaces.OrderInterfaces) *OrderControllers {
+	return &OrderControllers{
 		repo: repo,
 	}
 }

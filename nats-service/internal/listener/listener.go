@@ -18,16 +18,16 @@ func NewListenerService(nc *nats.Conn, subject string) *ListenerService {
 	}
 }
 
-func (s *ListenerService) Listen() {
+func (rc *ListenerService) Listen() {
 	// Listen specify NATS subject
-	_, err := s.nc.Subscribe(s.subject, func(msg *nats.Msg) {
-		log.Printf("Received message on subject %s: %s", s.subject, string(msg.Data))
+	_, err := rc.nc.Subscribe(rc.subject, func(msg *nats.Msg) {
+		log.Printf("Received message on subject %s: %s", rc.subject, string(msg.Data))
 
 		// Process the message
-		s.handleMessage(msg.Data)
+		rc.handleMessage(msg.Data)
 	})
 	if err != nil {
-		log.Fatalf("Error subscribing to subject %s: %v", s.subject, err)
+		log.Fatalf("Error subscribing to subject %s: %v", rc.subject, err)
 	}
 
 	// Must be open

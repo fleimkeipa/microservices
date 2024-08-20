@@ -1,9 +1,10 @@
 package repositories
 
 import (
+	"log"
 	"net/http"
+
 	"order-service/models"
-	"order-service/order"
 	"order-service/pkg/nats"
 
 	"github.com/labstack/echo/v4"
@@ -26,12 +27,10 @@ func (o *OrderRepository) Create(c echo.Context) error {
 	var nc = nats.ConnectToNATS()
 	defer nc.Close()
 
-	// Start OrderService
-	var orderService = order.NewOrderService(nc)
-
 	// Create order
-	var err = orderService.CreateOrder(c.Request().Context(), req.OrderID)
+	var err = nc.Publish("order.created", []byte(req.OrderID))
 	if err != nil {
+		log.Printf("Failed to publish order.created: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not create order"})
 	}
 

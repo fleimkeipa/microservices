@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	e := echo.New()
+	var e = echo.New()
 	routes.SetupRoutes(e)
 
 	e.Logger.Fatal(e.Start(":8080"))

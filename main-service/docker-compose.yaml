@@ -7,7 +7,12 @@ services:
       - "8080:8080"
     depends_on:
       - nats
+      - kafka
   nats:
     image: nats
     ports:
       - "4222:4222"
+  kafka:
+    image: apache/kafka
+    ports:
+      - "9092:9092"

@@ -2,25 +2,34 @@ package repositories
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/nats-io/nats.go"
+	"github.com/IBM/sarama"
 )
 
 type KafkaRepository struct {
-	nc *nats.Conn
+	producer sarama.SyncProducer
 }
 
-func NewKafkaRepository(nc *nats.Conn) *KafkaRepository {
+func NewKafkaRepository(producer sarama.SyncProducer) *KafkaRepository {
 	return &KafkaRepository{
-		nc: nc,
+		producer: producer,
 	}
 }
 
 func (rc *KafkaRepository) Send(subj string, data string) error {
-	// Create order
-	if err := rc.nc.Publish(subj, []byte(data)); err != nil {
-		return fmt.Errorf("failed to publish, subject: [%s], data: [%s], error: %w", subj, data, err)
+	var msg = sarama.ProducerMessage{
+		Topic: subj,
+		Value: sarama.StringEncoder(data),
 	}
+
+	// Create order
+	partition, offset, err := rc.producer.SendMessage(&msg)
+	if err != nil {
+		return fmt.Errorf("failed to publish, topic: [%s], data: [%s], error: %w", subj, data, err)
+	}
+
+	log.Printf("order is stored in topic: [%s], partition: [%d], offset: [%d]", subj, partition, offset)
 
 	return nil
 }

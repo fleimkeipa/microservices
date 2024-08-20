@@ -12,7 +12,7 @@ func SetupRoutes(e *echo.Echo) {
 	e.Use(middleware.Recover())
 
 	// Protected routes
-	r := e.Group("/orders")
+	var r = e.Group("/orders")
 
 	r.POST("", handlers.CreateOrder)
 }

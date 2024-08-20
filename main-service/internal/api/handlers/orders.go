@@ -5,6 +5,7 @@ import (
 
 	"order-service/commands"
 	"order-service/models"
+	"order-service/pkg/kafka"
 	"order-service/pkg/nats"
 	"order-service/repositories"
 	"order-service/repositories/interfaces"
@@ -34,7 +35,14 @@ func CreateOrder(c echo.Context) error {
 
 		messageRepo = repositories.NewNATSRepository(nc)
 	} else {
-		messageRepo = repositories.NewKafkaRepository(nc)
+		// Get Kafka connection
+		producer, err := kafka.ConnectToKafka()
+		if err != nil {
+			return err
+		}
+		defer producer.Close()
+
+		messageRepo = repositories.NewKafkaRepository(producer)
 	}
 
 	var natsCommandHandlers = commands.NewMessageCommandHandlers(messageRepo)

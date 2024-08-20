@@ -3,8 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"order-service/order"
+	"order-service/commands"
 	"order-service/pkg/nats"
+	"order-service/repositories"
 
 	"github.com/labstack/echo/v4"
 )
@@ -14,21 +15,15 @@ type OrderRequest struct {
 }
 
 func CreateOrder(c echo.Context) error {
-	req := new(OrderRequest)
-	if err := c.Bind(req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
-	}
-
 	// Get NATS connection
 	nc := nats.ConnectToNATS()
 	defer nc.Close()
 
-	// Start OrderService
-	orderService := order.NewOrderService(nc)
+	var orderRepo = repositories.NewOrderRepository()
+	var orderCommandHandler = commands.NewOrderCommandHandlers(orderRepo)
 
 	// Create order
-	err := orderService.CreateOrder(c.Request().Context(), req.OrderID)
-	if err != nil {
+	if err := orderCommandHandler.Create(c); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not create order"})
 	}
 

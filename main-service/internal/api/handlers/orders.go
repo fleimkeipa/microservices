@@ -17,9 +17,6 @@ type OrderRequest struct {
 }
 
 func CreateOrder(c echo.Context) error {
-	// Get NATS connection
-	nc := nats.ConnectToNATS()
-	defer nc.Close()
 
 	var req = new(models.OrderRequest)
 	if err := c.Bind(req); err != nil {
@@ -28,6 +25,13 @@ func CreateOrder(c echo.Context) error {
 
 	var messageRepo interfaces.MessageInterfaces
 	if req.SendBy == "nats" {
+		// Get NATS connection
+		nc, err := nats.ConnectToNATS()
+		if err != nil {
+			return err
+		}
+		defer nc.Close()
+
 		messageRepo = repositories.NewNATSRepository(nc)
 	} else {
 		messageRepo = repositories.NewKafkaRepository(nc)

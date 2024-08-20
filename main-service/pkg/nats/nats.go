@@ -1,15 +1,16 @@
 package nats
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/nats-io/nats.go"
 )
 
-func ConnectToNATS() *nats.Conn {
+func ConnectToNATS() (*nats.Conn, error) {
 	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
-		log.Fatalf("Error connecting to NATS: %v", err)
+		return nil, fmt.Errorf("failed to connect NATS: %w", err)
 	}
-	return nc
+
+	return nc, nil
 }

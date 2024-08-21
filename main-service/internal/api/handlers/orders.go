@@ -13,12 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type OrderRequest struct {
-	OrderID string `json:"order_id"`
-}
-
 func CreateOrder(c echo.Context) error {
-
 	var req = new(models.OrderRequest)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
@@ -29,7 +24,7 @@ func CreateOrder(c echo.Context) error {
 		// Get NATS connection
 		nc, err := nats.ConnectToNATS()
 		if err != nil {
-			return err
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
 		defer nc.Close()
 
@@ -38,7 +33,7 @@ func CreateOrder(c echo.Context) error {
 		// Get Kafka connection
 		producer, err := kafka.ConnectToKafka()
 		if err != nil {
-			return err
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
 		defer producer.Close()
 

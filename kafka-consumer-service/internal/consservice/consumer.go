@@ -23,8 +23,6 @@ func NewConsumerService(consumer sarama.Consumer, topic string) *ConsumerService
 }
 
 func (rc *ConsumerService) Listen(topic string) {
-	var msgCnt = 0
-
 	consumer, err := rc.consumer.ConsumePartition(topic, 0, sarama.OffsetOldest)
 	if err != nil {
 		log.Fatalf("failed to partition consumer: %v", err)
@@ -43,7 +41,6 @@ func (rc *ConsumerService) Listen(topic string) {
 			case err := <-consumer.Errors():
 				fmt.Println(err)
 			case msg := <-consumer.Messages():
-				msgCnt++
 				rc.handleMessage(msg.Value)
 			case <-sigchan:
 				fmt.Println("Interrupt is detected")
@@ -53,7 +50,7 @@ func (rc *ConsumerService) Listen(topic string) {
 	}()
 
 	<-doneCh
-	fmt.Println("Processed", msgCnt, "messages")
+	fmt.Println("Processed messages")
 }
 
 func (rc *ConsumerService) handleMessage(data []byte) {

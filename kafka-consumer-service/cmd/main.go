@@ -1,9 +1,10 @@
 package main
 
 import (
+	"log"
+
 	"kafka-consumer-service/internal/consservice"
 	"kafka-consumer-service/pkg/kafka"
-	"log"
 )
 
 func main() {

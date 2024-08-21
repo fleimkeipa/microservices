@@ -19,7 +19,7 @@ func NewRestRepository(cl *http.Client) *RestRepository {
 }
 
 func (rc *RestRepository) Send(subj string, data string) error {
-	reqUrl, err := url.JoinPath("localhost:8081", urlMap[subj])
+	reqUrl, err := url.JoinPath("http://localhost:8081/rest", urlMap[subj])
 	if err != nil {
 		return fmt.Errorf("failed to join path: %w", err)
 	}
@@ -39,6 +39,8 @@ func (rc *RestRepository) Send(subj string, data string) error {
 	if err != nil {
 		return fmt.Errorf("failed to created new request: %w", err)
 	}
+
+	req.Header.Add("Content-Type", "application/json")
 
 	res, err := rc.cl.Do(req)
 	if err != nil {

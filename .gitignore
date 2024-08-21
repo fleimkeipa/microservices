@@ -27,7 +27,3 @@ go.work
 
 # release
 release/
-
-# binary
-main
-gama

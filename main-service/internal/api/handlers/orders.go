@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"order-service/commands"
 	"order-service/models"
 	"order-service/pkg/kafka"
 	"order-service/pkg/nats"
+	"order-service/pkg/rest"
 	"order-service/repositories"
 	"order-service/repositories/interfaces"
 
@@ -20,7 +22,8 @@ func CreateOrder(c echo.Context) error {
 	}
 
 	var messageRepo interfaces.MessageInterfaces
-	if req.SendBy == "nats" {
+	switch req.SendBy {
+	case "nats":
 		// Get NATS connection
 		nc, err := nats.ConnectToNATS()
 		if err != nil {
@@ -29,7 +32,7 @@ func CreateOrder(c echo.Context) error {
 		defer nc.Close()
 
 		messageRepo = repositories.NewNATSRepository(nc)
-	} else {
+	case "kafka":
 		// Get Kafka connection
 		producer, err := kafka.ConnectToKafka()
 		if err != nil {
@@ -38,6 +41,11 @@ func CreateOrder(c echo.Context) error {
 		defer producer.Close()
 
 		messageRepo = repositories.NewKafkaRepository(producer)
+	case "rest":
+		var client = rest.CreateNewRestClient()
+		messageRepo = repositories.NewRestRepository(client)
+	default:
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": fmt.Sprintf("invalid send type: %s", req.SendBy)})
 	}
 
 	var natsCommandHandlers = commands.NewMessageCommandHandlers(messageRepo)

@@ -8,6 +8,7 @@ services:
     depends_on:
       - nats
       - kafka
+      - rabbitmq
   nats:
     image: nats
     ports:
@@ -16,3 +17,8 @@ services:
     image: apache/kafka
     ports:
       - "9092:9092"
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"

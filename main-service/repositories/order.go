@@ -7,18 +7,18 @@ import (
 )
 
 type OrderRepository struct {
-	natsRepo interfaces.MessageInterfaces
+	messageRepo interfaces.MessageInterfaces
 }
 
 func NewOrderRepository(natsRepo interfaces.MessageInterfaces) *OrderRepository {
 	return &OrderRepository{
-		natsRepo: natsRepo,
+		messageRepo: natsRepo,
 	}
 }
 
 func (o *OrderRepository) Create(orderID string) error {
 	// Create order
-	if err := o.natsRepo.Send("order.created", orderID); err != nil {
+	if err := o.messageRepo.Send("order.created", orderID); err != nil {
 		log.Printf("Failed to publish order.created: %v", err)
 		return err
 	}

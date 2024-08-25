@@ -8,6 +8,7 @@ import (
 	"order-service/models"
 	"order-service/pkg/kafka"
 	"order-service/pkg/nats"
+	"order-service/pkg/rabbitmq"
 	"order-service/pkg/rest"
 	"order-service/repositories"
 	"order-service/repositories/interfaces"
@@ -44,6 +45,15 @@ func CreateOrder(c echo.Context) error {
 	case "rest":
 		var client = rest.CreateNewRestClient()
 		messageRepo = repositories.NewRestRepository(client)
+	case "rabbitmq":
+		// Get Rabbit MQ connection
+		conn, err := rabbitmq.ConnectToRabbitMQ()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		defer conn.Close()
+
+		messageRepo = repositories.NewRabbitMQRepository(conn)
 	default:
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": fmt.Sprintf("invalid send type: %s", req.SendBy)})
 	}

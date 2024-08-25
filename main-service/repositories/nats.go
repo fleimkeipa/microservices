@@ -17,7 +17,7 @@ func NewNATSRepository(nc *nats.Conn) *NATSRepository {
 }
 
 func (rc *NATSRepository) Send(subj string, data string) error {
-	// Create order
+	// Publish message to subject
 	if err := rc.nc.Publish(subj, []byte(data)); err != nil {
 		return fmt.Errorf("failed to publish, subject: [%s], data: [%s], error: %w", subj, data, err)
 	}

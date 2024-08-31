@@ -7,7 +7,7 @@ import (
 )
 
 func ConnectToNATS() (*nats.Conn, error) {
-	nc, err := nats.Connect(nats.DefaultURL)
+	nc, err := nats.Connect("nats://nats:4222")
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect NATS: %w", err)
 	}
